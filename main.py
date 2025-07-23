@@ -4,6 +4,7 @@ import re
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+from bad_words import blacklisted_words
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -22,23 +23,6 @@ Role_test_2 = "Bot Tester Group 2"
 Role_real_beans = "Beans"
 GUILD_ID = discord.Object(id=os.getenv('GUILD_ID'))
 
-# List of Blacklisted words
-blacklisted_words = [
-    # Profanity
-    "ass", "shit", "fuck", "damn", "bitch", "asshole", "bastard", "dick", "piss", "cunt", "cock",
-
-    # Slurs (Racial, Ethnic, Gender-based — ⚠️ includes offensive terms for moderation only)
-    "nigger", "nigga", "nig", "fag", "faggot", "tranny", "kike", "chink", "gook", "spic", "dyke",
-
-    # Sexual/Explicit content
-    "porn", "cum", "ejaculate", "rape", "suck", "blowjob", "handjob", "dildo", "anal", "vagina", "penis",
-
-    # Bypass attempts / Leetspeak
-    "sh1t", "f*ck", "c0ck", "n1gga", "n1gger", "d1ck", "p0rn", "b1tch", "a$$", "f u c k",
-
-    # Hate symbols or alt spellings
-    "heil", "1488", "kkk", "nazi", "hitler",
-]  # Add more than needed
 # Precompile a regex pattern with word boundaries for performance
 blacklist_pattern = re.compile(rf"\b({'|'.join(re.escape(word) for word in blacklisted_words)})\b", re.IGNORECASE)
 

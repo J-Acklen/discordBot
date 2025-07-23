@@ -17,8 +17,10 @@ intents.presences = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-SECRET_ROLE = "Bot Tester Group 1"
-GUILD_ID = discord.Object(id=1267513255849492480)
+Role_test_1 = "Bot Tester Group 1"
+Role_test_2 = "Bot Tester Group 2"
+Role_real_beans = "Beans"
+GUILD_ID = discord.Object(id=os.getenv('GUILD_ID'))
 
 # List of Blacklisted words
 blacklisted_words = [
@@ -36,9 +38,10 @@ blacklisted_words = [
 
     # Hate symbols or alt spellings
     "heil", "1488", "kkk", "nazi", "hitler",
-]  # Add more as needed
+]  # Add more than needed
 # Precompile a regex pattern with word boundaries for performance
 blacklist_pattern = re.compile(rf"\b({'|'.join(re.escape(word) for word in blacklisted_words)})\b", re.IGNORECASE)
+
 
 @bot.event
 async def on_ready():
@@ -74,21 +77,41 @@ async def on_message(message):
 
 
 @bot.command()
-async def assign(ctx):
-    role = discord.utils.get(ctx.guild.roles, name=SECRET_ROLE)
+async def assign1(ctx):
+    role = discord.utils.get(ctx.guild.roles, name=Role_test_1)
     if role:
         await ctx.author.add_roles(role)
-        await ctx.send(f"{ctx.author.mention} is now assigned to {SECRET_ROLE}.")
+        await ctx.send(f"{ctx.author.mention} is now assigned to {Role_test_1}.")
     else:
         await ctx.send("Role doesn't exist")
 
 
 @bot.command()
-async def remove(ctx):
-    role = discord.utils.get(ctx.guild.roles, name=SECRET_ROLE)
+async def assign2(ctx):
+    role = discord.utils.get(ctx.guild.roles, name=Role_test_2)
+    if role:
+        await ctx.author.add_roles(role)
+        await ctx.send(f"{ctx.author.mention} is now assigned to {Role_test_2}.")
+    else:
+        await ctx.send("Role doesn't exist")
+
+
+@bot.command()
+async def remove1(ctx):
+    role = discord.utils.get(ctx.guild.roles, name=Role_test_1)
     if role:
         await ctx.author.remove_roles(role)
-        await ctx.send(f"{ctx.author.mention} has had {SECRET_ROLE} removed.")
+        await ctx.send(f"{ctx.author.mention} has had {Role_test_1} removed.")
+    else:
+        await ctx.send("Role doesn't exist")
+
+
+@bot.command()
+async def remove2(ctx):
+    role = discord.utils.get(ctx.guild.roles, name=Role_test_2)
+    if role:
+        await ctx.author.remove_roles(role)
+        await ctx.send(f"{ctx.author.mention} has had {Role_test_2} removed.")
     else:
         await ctx.send("Role doesn't exist")
 
@@ -111,13 +134,29 @@ async def poll(ctx, *, question):
     await poll_message.add_reaction("👎")
 
 
+# Role-Specific bot commands
+
+# basic Role_test_1 test
 @bot.command()
-@commands.has_role(SECRET_ROLE)
-async def secret(ctx):
-    await ctx.send("Welcome to the club!")
+@commands.has_role(Role_test_1)
+async def secret1(ctx):
+    await ctx.send("You have type 1 diabetes!")
 
 
-@secret.error
+# basic role_test_2 test
+@bot.command()
+@commands.has_role(Role_test_2)
+async def secret2(ctx):
+    await ctx.send("You have type 2 diabetes!")
+
+
+@secret1.error
+async def secret_error(ctx, error):
+    if isinstance(error, commands.MissingRole):
+        await ctx.send("You do not have the permission to do that!")
+
+
+@secret2.error
 async def secret_error(ctx, error):
     if isinstance(error, commands.MissingRole):
         await ctx.send("You do not have the permission to do that!")

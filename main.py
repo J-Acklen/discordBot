@@ -38,6 +38,9 @@ async def on_ready():
 async def sayHello(interaction: discord.Interaction):
     await interaction.response.send_message("Hello!")
 
+@bot.tree.command(name="test", description="test slash command", guild=GUILD_ID)
+async def testCommand(interaction: discord.Interaction):
+    await interaction.response.send_message("This is a test slash command")
 
 # … rest of your prefix commands …
 
@@ -134,6 +137,12 @@ async def secret2(ctx):
     await ctx.send("You have type 2 diabetes!")
 
 
+@bot.command()
+@commands.has_role(Role_real_beans)
+async def secret3(ctx):
+    await ctx.send("What up blud?")
+
+
 @secret1.error
 async def secret_error(ctx, error):
     if isinstance(error, commands.MissingRole):
@@ -141,6 +150,12 @@ async def secret_error(ctx, error):
 
 
 @secret2.error
+async def secret_error(ctx, error):
+    if isinstance(error, commands.MissingRole):
+        await ctx.send("You do not have the permission to do that!")
+
+
+@secret3.error
 async def secret_error(ctx, error):
     if isinstance(error, commands.MissingRole):
         await ctx.send("You do not have the permission to do that!")

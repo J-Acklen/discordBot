@@ -38,9 +38,53 @@ async def on_ready():
 async def sayHello(interaction: discord.Interaction):
     await interaction.response.send_message("Hello!")
 
+
 @bot.tree.command(name="test", description="test slash command", guild=GUILD_ID)
 async def testCommand(interaction: discord.Interaction):
     await interaction.response.send_message("This is a test slash command")
+
+
+@bot.tree.command(name="assign1", description="assigns: bot tester role 1", guild=GUILD_ID)
+async def assign1(interaction: discord.Interaction):
+    await interaction.guild.fetch_roles()
+    role = discord.utils.get(interaction.guild.roles, name=Role_test_1)
+    if role:
+        await interaction.user.add_roles(role)
+        await interaction.response.send_message(f"{interaction.user.mention} is now assigned to " + Role_test_1 + ".")
+    else:
+        await interaction.response.send_message("Role doesn't exist")
+
+
+@bot.tree.command(name="assign2", description="assigns: bot tester role 2", guild=GUILD_ID)
+async def assign2(interaction: discord.Interaction):
+    await interaction.guild.fetch_roles()
+    role = discord.utils.get(interaction.guild.roles, name=Role_test_2)
+    if role:
+        await interaction.user.add_roles(role)
+        await interaction.response.send_message(f"{interaction.user.mention} is now assigned to " + Role_test_2 + ".")
+    else:
+        await interaction.response.send_message("Role doesn't exist")
+
+
+@bot.tree.command(name="remove1", description="removes: bot tester role 1", guild=GUILD_ID)
+async def remove1(interaction: discord.Interaction):
+    role = discord.utils.get(interaction.guild.roles, name=Role_test_1)
+    if role:
+        await interaction.user.remove_roles(role)
+        await interaction.response.send_message(f"{interaction.user.mention} has had {Role_test_1} removed.")
+    else:
+        await interaction.response.send_message("Role doesn't exist")
+
+
+@bot.tree.command(name="remove2", description="removes: bot tester role 2", guild=GUILD_ID)
+async def remove2(interaction: discord.Interaction):
+    role = discord.utils.get(interaction.guild.roles, name=Role_test_2)
+    if role:
+        await interaction.user.remove_roles(role)
+        await interaction.response.send_message(f"{interaction.user.mention} has had {Role_test_2} removed.")
+    else:
+        await interaction.response.send_message("Role doesn't exist")
+
 
 # … rest of your prefix commands …
 
@@ -61,46 +105,6 @@ async def on_message(message):
         return
 
     await bot.process_commands(message)
-
-
-@bot.command()
-async def assign1(ctx):
-    role = discord.utils.get(ctx.guild.roles, name=Role_test_1)
-    if role:
-        await ctx.author.add_roles(role)
-        await ctx.send(f"{ctx.author.mention} is now assigned to {Role_test_1}.")
-    else:
-        await ctx.send("Role doesn't exist")
-
-
-@bot.command()
-async def assign2(ctx):
-    role = discord.utils.get(ctx.guild.roles, name=Role_test_2)
-    if role:
-        await ctx.author.add_roles(role)
-        await ctx.send(f"{ctx.author.mention} is now assigned to {Role_test_2}.")
-    else:
-        await ctx.send("Role doesn't exist")
-
-
-@bot.command()
-async def remove1(ctx):
-    role = discord.utils.get(ctx.guild.roles, name=Role_test_1)
-    if role:
-        await ctx.author.remove_roles(role)
-        await ctx.send(f"{ctx.author.mention} has had {Role_test_1} removed.")
-    else:
-        await ctx.send("Role doesn't exist")
-
-
-@bot.command()
-async def remove2(ctx):
-    role = discord.utils.get(ctx.guild.roles, name=Role_test_2)
-    if role:
-        await ctx.author.remove_roles(role)
-        await ctx.send(f"{ctx.author.mention} has had {Role_test_2} removed.")
-    else:
-        await ctx.send("Role doesn't exist")
 
 
 @bot.command()
@@ -158,7 +162,7 @@ async def secret_error(ctx, error):
 @secret3.error
 async def secret_error(ctx, error):
     if isinstance(error, commands.MissingRole):
-        await ctx.send("You do not have the permission to do that!")
+        await ctx.send("You are not a real bean... Try Harder.")
 
 
 # Run the bot

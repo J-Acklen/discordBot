@@ -34,6 +34,7 @@ async def on_ready():
     print(f"Synced {len(synced)} slash commands to guild {GUILD_ID.id}")
 
 
+# Creating Slash Commands (new with Discord.v2)
 @bot.tree.command(name="hello", description="Say Hello!", guild=GUILD_ID)
 async def sayHello(interaction: discord.Interaction):
     await interaction.response.send_message("Hello!")

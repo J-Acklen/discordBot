@@ -87,6 +87,12 @@ async def remove2(interaction: discord.Interaction):
         await interaction.response.send_message("Role doesn't exist")
 
 
+@bot.tree.command(name="dm", description="Send yourself a DM", guild=GUILD_ID)
+async def dm(interaction: discord.Interaction, msg: str):
+    await interaction.user.send(f"You said \"{msg}\"")
+    await interaction.response.send_message("I sent you a DM!", ephemeral=True)
+
+
 # … rest of your prefix commands …
 
 @bot.event
@@ -106,11 +112,6 @@ async def on_message(message):
         return
 
     await bot.process_commands(message)
-
-
-@bot.command()
-async def dm(ctx, *, msg):
-    await ctx.author.send(f"You said {msg}")
 
 
 @bot.command()

@@ -26,6 +26,7 @@ GUILD_ID = discord.Object(id=os.getenv('GUILD_ID'))
 # Precompile a regex pattern with word boundaries for performance
 blacklist_pattern = re.compile(rf"\b({'|'.join(re.escape(word) for word in blacklisted_words)})\b", re.IGNORECASE)
 
+# This comment is to see if github is synced between my devices. (attempt 4)
 
 @bot.event
 async def on_ready():
@@ -91,7 +92,6 @@ async def remove2(interaction: discord.Interaction):
 async def dm(interaction: discord.Interaction, msg: str):
     await interaction.user.send(f"You said \"{msg}\"")
     await interaction.response.send_message("I sent you a DM!", ephemeral=True)
-
 
 # … rest of your prefix commands …
 

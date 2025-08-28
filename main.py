@@ -3,6 +3,7 @@ import os
 import re
 import discord
 from discord.ext import commands
+from discord import app_commands
 from dotenv import load_dotenv
 from bad_words import blacklisted_words
 
@@ -15,6 +16,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 intents.presences = True
+intents.reactions = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
@@ -108,7 +110,7 @@ async def on_message(message):
     # Use the regex pattern to check for blacklisted words
     if blacklist_pattern.search(message.content):
         await message.delete()
-        await message.channel.send(f"{message.author.mention} - don't use that word!")
+        await message.channel.send(f"{message.author.mention} bad! - don't use that word!")
         return
 
     await bot.process_commands(message)
@@ -166,6 +168,38 @@ async def secret_error(ctx, error):
     if isinstance(error, commands.MissingRole):
         await ctx.send("You are not a real bean... Try Harder.")
 
+
+# Reaction role setup
+reaction_roles = {
+    "👍": "Bot Tester Group 1",
+    "👎": "Bot Tester Group 2",
+    "🥫": "Beans"  # example for Role_real_beans
+}
+
+# Slash command: create reaction roles message (admin only)
+@bot.tree.command(name="reactionroles", description="Create a reaction role message", guild=GUILD_ID)
+@app_commands.checks.has_permissions(manage_roles=True)  # Only users with "Manage Roles" can use it
+async def reactionroles(interaction: discord.Interaction):
+    embed = discord.Embed(
+        title="Reaction Roles",
+        description="\n".join([f"{emoji} → {role}" for emoji, role in reaction_roles.items()]),
+        color=discord.Color.blue()
+    )
+    message = await interaction.channel.send(embed=embed)
+
+    # Add the reactions automatically
+    for emoji in reaction_roles.keys():
+        await message.add_reaction(emoji)
+
+    await interaction.response.send_message("Reaction roles message created!", ephemeral=True)
+
+# Handle missing permissions nicely
+@reactionroles.error
+async def reactionroles_error(interaction: discord.Interaction, error):
+    if isinstance(error, app_commands.errors.MissingPermissions):
+        await interaction.response.send_message(
+            "❌ You don’t have permission to use this command.", ephemeral=True
+        )
 
 # Run the bot
 bot.run(token, log_handler=handler, log_level=logging.DEBUG)

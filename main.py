@@ -42,6 +42,9 @@ async def on_ready():
 async def sayHello(interaction: discord.Interaction):
     await interaction.response.send_message("Hello!")
 
+@bot.tree.command(name="gang_sht", description="Do some gng sht", guild=GUILD_ID)
+async def gngSht(interaction: discord.Interaction):
+    await interaction.response.send_message("gang")
 
 @bot.tree.command(name="test", description="test slash command", guild=GUILD_ID)
 async def testCommand(interaction: discord.Interaction):
@@ -176,7 +179,8 @@ reaction_roles = {
     "🥫": "Beans"  # example for Role_real_beans
 }
 
-# Slash command: create reaction roles message (admin only)
+# MUST FIX!!!!
+# Slash command: create reaction roles message (admin only) (issue here: creates message, but doesn't give role)
 @bot.tree.command(name="reactionroles", description="Create a reaction role message", guild=GUILD_ID)
 @app_commands.checks.has_permissions(manage_roles=True)  # Only users with "Manage Roles" can use it
 async def reactionroles(interaction: discord.Interaction):

@@ -4,8 +4,8 @@ Recommended changes for this bot, roughly ordered by priority. Check items off a
 
 ## Bugs
 
-- [ ] **Reaction roles don't work** (`main.py:184`) — `/reactionroles` posts the embed and reactions, but there's no `on_raw_reaction_add` / `on_raw_reaction_remove` handler that reads a user's reaction and calls `add_roles`/`remove_roles`. Needs that handler, keyed off `reaction_roles` and the message ID it posted.
-- [ ] **`GUILD_ID` isn't validated** (`main.py:26`) — `os.getenv('GUILD_ID')` returns `None` if the env var is missing, and `discord.Object(id=None)` will fail with a confusing error deep in `on_ready`. Fail fast with a clear message if `DISCORD_TOKEN` or `GUILD_ID` isn't set.
+- [x] **Reaction roles don't work** (`main.py:184`) — `/reactionroles` posts the embed and reactions, but there's no `on_raw_reaction_add` / `on_raw_reaction_remove` handler that reads a user's reaction and calls `add_roles`/`remove_roles`. Needs that handler, keyed off `reaction_roles` and the message ID it posted. *(fixed in a46c010 — message ID tracked in memory; persistence across restarts still open, see below)*
+- [x] **`GUILD_ID` isn't validated** (`main.py:26`) — `os.getenv('GUILD_ID')` returns `None` if the env var is missing, and `discord.Object(id=None)` will fail with a confusing error deep in `on_ready`. Fail fast with a clear message if `DISCORD_TOKEN` or `GUILD_ID` isn't set. *(fixed in a46c010)*
 
 ## Code quality
 

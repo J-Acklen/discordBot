@@ -165,19 +165,19 @@ async def secret3(ctx):
 
 
 @secret1.error
-async def secret_error(ctx, error):
+async def secret1_error(ctx, error):
     if isinstance(error, commands.MissingRole):
         await ctx.send("You do not have the permission to do that!")
 
 
 @secret2.error
-async def secret_error(ctx, error):
+async def secret2_error(ctx, error):
     if isinstance(error, commands.MissingRole):
         await ctx.send("You do not have the permission to do that!")
 
 
 @secret3.error
-async def secret_error(ctx, error):
+async def secret3_error(ctx, error):
     if isinstance(error, commands.MissingRole):
         await ctx.send("You are not a real bean... Try Harder.")
 

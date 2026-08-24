@@ -9,6 +9,16 @@ from bad_words import blacklisted_words
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
+guild_id_raw = os.getenv('GUILD_ID')
+
+if not token:
+    raise SystemExit("DISCORD_TOKEN is not set. Add it to your .env file.")
+if not guild_id_raw:
+    raise SystemExit("GUILD_ID is not set. Add it to your .env file.")
+try:
+    guild_id = int(guild_id_raw)
+except ValueError:
+    raise SystemExit(f"GUILD_ID must be a number, got: {guild_id_raw!r}")
 
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 
@@ -23,7 +33,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 Role_test_1 = "Bot Tester Group 1"
 Role_test_2 = "Bot Tester Group 2"
 Role_real_beans = "Beans"
-GUILD_ID = discord.Object(id=os.getenv('GUILD_ID'))
+GUILD_ID = discord.Object(id=guild_id)
 
 # Precompile a regex pattern with word boundaries for performance
 blacklist_pattern = re.compile(rf"\b({'|'.join(re.escape(word) for word in blacklisted_words)})\b", re.IGNORECASE)
@@ -179,23 +189,63 @@ reaction_roles = {
     "🥫": "Beans"  # example for Role_real_beans
 }
 
-# MUST FIX!!!!
-# Slash command: create reaction roles message (admin only) (issue here: creates message, but doesn't give role)
+# Message ID of the active reaction-roles message. Reset on restart, since
+# it's tracked in memory only (see IMPROVEMENTS.md for persisting it).
+reaction_role_message_id = None
+
+
+# Slash command: create reaction roles message (admin only)
 @bot.tree.command(name="reactionroles", description="Create a reaction role message", guild=GUILD_ID)
 @app_commands.checks.has_permissions(manage_roles=True)  # Only users with "Manage Roles" can use it
 async def reactionroles(interaction: discord.Interaction):
+    global reaction_role_message_id
+
     embed = discord.Embed(
         title="Reaction Roles",
         description="\n".join([f"{emoji} → {role}" for emoji, role in reaction_roles.items()]),
         color=discord.Color.blue()
     )
     message = await interaction.channel.send(embed=embed)
+    reaction_role_message_id = message.id
 
     # Add the reactions automatically
     for emoji in reaction_roles.keys():
         await message.add_reaction(emoji)
 
     await interaction.response.send_message("Reaction roles message created!", ephemeral=True)
+
+
+@bot.event
+async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
+    if payload.message_id != reaction_role_message_id or payload.user_id == bot.user.id:
+        return
+
+    role_name = reaction_roles.get(str(payload.emoji))
+    if not role_name:
+        return
+
+    guild = bot.get_guild(payload.guild_id)
+    role = discord.utils.get(guild.roles, name=role_name)
+    if role:
+        await payload.member.add_roles(role)
+
+
+@bot.event
+async def on_raw_reaction_remove(payload: discord.RawReactionActionEvent):
+    if payload.message_id != reaction_role_message_id:
+        return
+
+    role_name = reaction_roles.get(str(payload.emoji))
+    if not role_name:
+        return
+
+    guild = bot.get_guild(payload.guild_id)
+    if guild is None:
+        return
+    member = guild.get_member(payload.user_id)
+    role = discord.utils.get(guild.roles, name=role_name)
+    if member and role:
+        await member.remove_roles(role)
 
 # Handle missing permissions nicely
 @reactionroles.error

@@ -9,7 +9,7 @@ Recommended changes for this bot, roughly ordered by priority. Check items off a
 
 ## Code quality
 
-- [ ] **Duplicate function names for error handlers** (`main.py:157-172`) — `secret_error` is defined three times for `secret1.error`, `secret2.error`, `secret3.error`. Each decorator binds correctly at definition time so it isn't currently broken, but the shadowed name is confusing to read and easy to break during edits (e.g. copy-pasting a fourth one). Rename to `secret1_error`, `secret2_error`, `secret3_error`.
+- [x] **Duplicate function names for error handlers** (`main.py:157-172`) — `secret_error` is defined three times for `secret1.error`, `secret2.error`, `secret3.error`. Each decorator binds correctly at definition time so it isn't currently broken, but the shadowed name is confusing to read and easy to break during edits (e.g. copy-pasting a fourth one). Rename to `secret1_error`, `secret2_error`, `secret3_error`. *(fixed in a3c696f)*
 - [ ] **Remove or relocate `pythontest.py`** — looks like a scratch file unrelated to the bot; either delete it or move it under `tests/` if it's meant to stay.
 - [ ] **Pin dependency versions** (`requirements.txt`) — `discord.py` has no version pin (only `python-dotenv` does). Pin it so a breaking release doesn't silently change bot behavior.
 - [ ] **Logging level** (`main.py:209`) — `log_level=logging.DEBUG` dumps full guild/member/presence payloads into `discord.log` on every run. Fine for local debugging; switch to `logging.INFO` (or gate by an env var) before running unattended.
